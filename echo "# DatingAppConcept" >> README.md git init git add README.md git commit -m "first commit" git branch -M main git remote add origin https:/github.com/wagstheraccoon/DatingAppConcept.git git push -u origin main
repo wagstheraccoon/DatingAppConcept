@@ -1,0 +1,64 @@
+import datetime
+
+class User:
+  def __init__(self, name, age, gender, interests):
+    self.name = name
+    self.age = age
+    self.gender = gender
+    self.interests = interests
+    self.matches = []
+    self.last_active = datetime.datetime.now()
+
+class Match:
+  def __init__(self, user1, user2):
+    self.users = [user1, user2]
+
+class DatingApp:
+  def __init__(self, users):
+    self.users = users
+    self.matches = []
+
+  def get_matches(self, user, max_distance):
+    # Get a list of all users within the specified maximum distance
+    nearby_users = []
+    for u in self.users:
+      if u.gender != user.gender and abs(user.age - u.age) <= max_distance:
+        nearby_users.append(u)
+    # Filter the list to only include users with shared interests
+    matches = []
+    for u in nearby_users:
+      for interest in user.interests:
+        if interest in u.interests:
+          matches.append(u)
+          break
+    return matches
+
+  def create_match(self, user1, user2):
+    # Create a match and add it to the list of matches
+    m = Match(user1, user2)
+    self.matches.append(m)
+    # Add the match to each user's list of matches
+    user1.matches.append(m)
+    user2.matches.append(m)
+
+# Example usage
+users = [
+  User("Alice", 21, "F", ["music", "sports"]),
+  User("Bob", 25, "M", ["movies", "books"]),
+  User("Charlie", 30, "M", ["music", "movies"])
+]
+
+app = DatingApp(users)
+
+alice = users[0]
+bob = users[1]
+charlie = users[2]
+
+# Alice gets a list of matches within a maximum age difference of 5
+matches = app.get_matches(alice, 5)
+# matches should include Bob and Charlie
+
+# Alice and Bob create a match
+app.create_match(alice, bob)
+# alice.matches should include a match with Bob
+# bob.matches should include a match with Alice
